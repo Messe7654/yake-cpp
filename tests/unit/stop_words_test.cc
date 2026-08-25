@@ -20,5 +20,7 @@ TEST(StopWords, TreatsShortTermsAsStopWords) {
 
   EXPECT_TRUE(yake::detail::is_stop_word("of", english));
   EXPECT_TRUE(yake::detail::is_stop_word("ai", english));
+  EXPECT_TRUE(yake::detail::is_stop_word("가", english));
+  EXPECT_TRUE(yake::detail::is_stop_word("가나", english));
   EXPECT_FALSE(yake::detail::is_stop_word("gas", english));
 }

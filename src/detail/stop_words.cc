@@ -2,12 +2,28 @@
 #include "detail/stop_words_data.h"
 #include "detail/term_normalizer.h"
 
+#include <cstddef>
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <utf8proc.h>
 
 namespace yake::detail {
 namespace {
+
+std::size_t code_point_count(std::string_view text) {
+  const auto* data{reinterpret_cast<const utf8proc_uint8_t*>(text.data())};
+  std::size_t count{0};
+
+  for (std::size_t offset{0}; offset < text.size(); ++count) {
+    utf8proc_int32_t code_point{0};
+    const utf8proc_ssize_t len{
+        utf8proc_iterate(data + offset, static_cast<utf8proc_ssize_t>(text.size() - offset), &code_point)};
+    offset += len > 0 ? static_cast<std::size_t>(len) : 1;
+  }
+
+  return count;
+}
 
 StopWordSet parse_stop_words(std::string_view data) {
   StopWordSet stop_words{};
@@ -35,7 +51,7 @@ const StopWordSet& stop_words_for_language(std::string_view language) {
 }
 
 bool is_stop_word(std::string_view token, const StopWordSet& stop_words) {
-  if (token.size() < 3 || stop_words.find(std::string{token}) != stop_words.end()) return true;
+  if (code_point_count(token) < 3 || stop_words.find(std::string{token}) != stop_words.end()) return true;
   const std::string term{normalize_term(token)};
   return stop_words.find(term) != stop_words.end();
 }
