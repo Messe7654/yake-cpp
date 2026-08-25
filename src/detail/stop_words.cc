@@ -1,6 +1,5 @@
 #include "detail/stop_words.h"
 #include "detail/stop_words_data.h"
-#include "detail/term_normalizer.h"
 
 #include <cstddef>
 #include <stdexcept>
@@ -51,9 +50,7 @@ const StopWordSet& stop_words_for_language(std::string_view language) {
 }
 
 bool is_stop_word(std::string_view token, const StopWordSet& stop_words) {
-  if (code_point_count(token) < 3 || stop_words.find(std::string{token}) != stop_words.end()) return true;
-  const std::string term{normalize_term(token)};
-  return stop_words.find(term) != stop_words.end();
+  return code_point_count(token) < 3 || stop_words.find(std::string{token}) != stop_words.end();
 }
 
 }  // namespace yake::detail

@@ -16,9 +16,9 @@ TEST(WordStatistics, CollectsFrequencySentenceAndCaseInformation) {
   EXPECT_EQ(nasa.capitalized_freq, 0U);
   EXPECT_EQ(nasa.sentence_pos, (std::vector<std::size_t>{0, 1}));
 
-  const auto& tool{doc.words.at("tool")};
-  EXPECT_EQ(tool.freq, 2U);
-  EXPECT_EQ(tool.capitalized_freq, 1U);
+  const auto& tools{doc.words.at("tools")};
+  EXPECT_EQ(tools.freq, 2U);
+  EXPECT_EQ(tools.capitalized_freq, 1U);
 }
 
 TEST(WordStatistics, CollectsDirectionalContextWithinWindow) {
@@ -49,11 +49,13 @@ TEST(WordStatistics, GroupsUnicodeEquivalentForms) {
   EXPECT_EQ(doc.words.at("caf\xC3\xA9").freq, 2U);
 }
 
-TEST(WordStatistics, GroupsSimpleEnglishPluralForms) {
+TEST(WordStatistics, KeepsSingularAndPluralFormsSeparate) {
   const auto tokens{yake::detail::tokenize("graph graphs algorithm algorithms")};
   const auto doc{yake::detail::collect_word_statistics(tokens, 1)};
 
-  EXPECT_EQ(doc.words.size(), 2U);
-  EXPECT_EQ(doc.words.at("graph").freq, 2U);
-  EXPECT_EQ(doc.words.at("algorithm").freq, 2U);
+  EXPECT_EQ(doc.words.size(), 4U);
+  EXPECT_EQ(doc.words.at("graph").freq, 1U);
+  EXPECT_EQ(doc.words.at("graphs").freq, 1U);
+  EXPECT_EQ(doc.words.at("algorithm").freq, 1U);
+  EXPECT_EQ(doc.words.at("algorithms").freq, 1U);
 }

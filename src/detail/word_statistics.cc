@@ -1,4 +1,3 @@
-#include "detail/term_normalizer.h"
 #include "detail/word_statistics.h"
 
 #include <cstdint>
@@ -62,7 +61,7 @@ void collect_context(const std::vector<Token>& tokens, std::size_t idx, std::siz
     const Token& neighbor{tokens[cursor]};
     if (neighbor.sentence_idx != tokens[idx].sentence_idx || neighbor.kind == TokenKind::kPunctuation) break;
 
-    ++ctx[normalize_term(neighbor.norm)];
+    ++ctx[neighbor.norm];
     ++words_seen;
   }
 }
@@ -84,7 +83,7 @@ DocumentStatistics collect_word_statistics(const std::vector<Token>& tokens, std
       ++doc.sentence_count;
     }
 
-    const std::string term{normalize_term(token.norm)};
+    const std::string& term{token.norm};
     WordStatistics& stats{doc.words[term]};
     if (stats.freq == 0) stats.norm = term;
     ++stats.freq;
