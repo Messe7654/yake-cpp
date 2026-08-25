@@ -1,0 +1,19 @@
+yake-cpp
+
+This project implements the YAKE keyword extraction algorithm described by:
+
+Ricardo Campos, Vítor Mangaravite, Arian Pasquali, Alípio Jorge, Célia Nunes,
+and Adam Jatowt. "YAKE! Keyword extraction from single documents using
+multiple local features." Information Sciences 509 (2020), 257-289.
+https://doi.org/10.1016/j.ins.2019.09.013
+
+The official YAKE software is copyright (C) 2018 INESC TEC and its authors:
+Ricardo Campos, Vítor Mangaravite, Arian Pasquali, Alípio Jorge, Célia Nunes,
+and Adam Jatowt. It is distributed under AGPL-3.0-or-later, with a separate
+commercial license available from INESC TEC.
+
+yake-cpp is an independent C++ implementation and is not an official YAKE
+release. It is not affiliated with or endorsed by the YAKE authors or INESC TEC.
+
+The yake-cpp source code is distributed under AGPL-3.0-or-later. See LICENSE
+for the complete terms.

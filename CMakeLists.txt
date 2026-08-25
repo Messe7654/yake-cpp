@@ -98,6 +98,19 @@ install(
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/yake
 )
 
+install(
+    FILES
+        LICENSE
+        NOTICE
+        THIRD_PARTY_NOTICES.md
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/doc/yake
+)
+
+install(
+    DIRECTORY LICENSES
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/doc/yake
+)
+
 if(YAKE_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
