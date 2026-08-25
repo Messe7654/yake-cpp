@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_dependency(utf8proc 2.11 CONFIG)
+
+include("${CMAKE_CURRENT_LIST_DIR}/yake-targets.cmake")
+
+check_required_components(yake)

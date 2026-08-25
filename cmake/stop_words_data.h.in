@@ -1,0 +1,12 @@
+#ifndef YAKE_CPP_BUILD_DETAIL_STOP_WORDS_DATA_H_
+#define YAKE_CPP_BUILD_DETAIL_STOP_WORDS_DATA_H_
+
+#include <string_view>
+
+namespace yake::detail {
+
+inline constexpr std::string_view kEnglishStopWordsData{R"yake_stop_words(@YAKE_ENGLISH_STOP_WORDS@)yake_stop_words"};
+
+}  // namespace yake::detail
+
+#endif  // YAKE_CPP_BUILD_DETAIL_STOP_WORDS_DATA_H_

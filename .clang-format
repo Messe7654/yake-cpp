@@ -1,0 +1,13 @@
+BasedOnStyle: Google
+ColumnLimit: 120
+AlignConsecutiveAssignments: Consecutive
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^"'
+    Priority: 1
+  - Regex: '^<'
+    Priority: 2
+IncludeIsMainRegex: 'a^'
+BreakBeforeBraces: Custom
+BraceWrapping:
+  BeforeElse: true
