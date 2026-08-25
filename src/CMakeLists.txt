@@ -21,7 +21,6 @@ add_library(yake
     detail/normalizer.cc
     detail/similarity.cc
     detail/stop_words.cc
-    detail/term_normalizer.cc
     detail/tokenizer.cc
     detail/word_features.cc
     detail/word_statistics.cc

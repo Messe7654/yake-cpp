@@ -17,7 +17,6 @@ add_executable(yake_tests
     unit/keyword_extractor_test.cc
     unit/normalizer_test.cc
     unit/stop_words_test.cc
-    unit/term_normalizer_test.cc
     unit/tokenizer_test.cc
     unit/version_test.cc
     unit/word_features_test.cc

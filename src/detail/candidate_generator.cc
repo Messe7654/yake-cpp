@@ -1,5 +1,4 @@
 #include "detail/candidate_generator.h"
-#include "detail/term_normalizer.h"
 
 #include <cstddef>
 #include <string>
@@ -39,7 +38,7 @@ CandidateMap generate_candidates(const std::vector<Token>& tokens, std::size_t m
 
       append_term(text, token.text);
       append_term(norm, token.norm);
-      terms.push_back(normalize_term(token.norm));
+      terms.push_back(token.norm);
 
       if (is_stop_word(first.norm, stop_words) || is_stop_word(token.norm, stop_words)) {
         ++cursor;
