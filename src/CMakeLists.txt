@@ -1,4 +1,5 @@
 include(FetchContent)
+include(GenerateExportHeader)
 
 FetchContent_Declare(
     utf8proc
@@ -31,9 +32,19 @@ add_library(yake
 add_library(yake::yake ALIAS yake)
 yake_configure_target(yake)
 
+generate_export_header(yake
+    BASE_NAME YAKE
+    EXPORT_FILE_NAME generated/yake/export.h
+)
+
+if(NOT BUILD_SHARED_LIBS)
+    target_compile_definitions(yake PUBLIC YAKE_STATIC_DEFINE)
+endif()
+
 target_include_directories(yake
     PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>
         $<INSTALL_INTERFACE:include>
 )
 
