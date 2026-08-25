@@ -115,7 +115,3 @@ target_link_libraries(your_target PRIVATE yake::yake)
 ```
 
 표준 CMake 검색 경로가 아닌 곳에 설치했다면 설치 경로를 `CMAKE_PREFIX_PATH`로 지정해야 합니다.
-
-## 라이선스
-
-프로젝트 라이선스는 아직 정하지 않았습니다. utf8proc과 GoogleTest에는 각각 원본 프로젝트의 라이선스가 적용됩니다.
