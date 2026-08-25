@@ -85,6 +85,11 @@ install(
 )
 
 install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/src/generated/yake/export.h
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/yake
+)
+
+install(
     EXPORT yake-targets
     FILE yake-targets.cmake
     NAMESPACE yake::

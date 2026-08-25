@@ -2,6 +2,7 @@
 #define YAKE_CPP_INCLUDE_YAKE_DETAIL_EXTRACTION_H_
 
 #include "yake/config.h"
+#include "yake/export.h"
 
 #include <cstddef>
 #include <string>
@@ -20,8 +21,8 @@ struct RankedKeyword {
   double score = 0.0;
 };
 
-void validate_config(const Config& config);
-[[nodiscard]] std::vector<RankedKeyword> rank_keywords(const Config& config, std::string_view text);
+YAKE_EXPORT void validate_config(const Config& config);
+[[nodiscard]] YAKE_EXPORT std::vector<RankedKeyword> rank_keywords(const Config& config, std::string_view text);
 
 }  // namespace yake::detail
 
