@@ -39,6 +39,8 @@ int main() {
 }
 ```
 
+추가 사용 예시는 [`examples/README.md`](examples/README.md)에서 확인할 수 있습니다.
+
 ### CMake 연동
 
 - 소스 트리를 서브디렉터리로 포함
