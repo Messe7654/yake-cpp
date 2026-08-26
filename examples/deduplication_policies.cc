@@ -3,8 +3,6 @@
 #include <iostream>
 #include <string_view>
 
-namespace {
-
 template <typename Policy>
 void print_keywords(std::string_view name, std::string_view text) {
   yake::Config config{};
@@ -17,8 +15,6 @@ void print_keywords(std::string_view name, std::string_view text) {
   std::cout << name << ':' << '\n';
   for (const yake::Keyword& keyword : extractor.extract(text)) std::cout << "- " << keyword.text << '\n';
 }
-
-}  // namespace
 
 int main() {
   constexpr std::string_view text{

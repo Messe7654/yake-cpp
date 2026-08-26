@@ -4,15 +4,11 @@
 #include <string>
 #include <string_view>
 
-namespace {
-
-constexpr std::string_view kExampleText{
-    "Keyword extraction identifies the most relevant expressions in a document. "
-    "YAKE performs unsupervised keyword extraction using local statistical features."};
-
-}  // namespace
-
 int main(int argc, char* argv[]) {
+  constexpr std::string_view example_text{
+      "Keyword extraction identifies the most relevant expressions in a document. "
+      "YAKE performs unsupervised keyword extraction using local statistical features."};
+
   std::string text{};
   for (int idx{1}; idx < argc; ++idx) {
     if (!text.empty()) text.push_back(' ');
@@ -22,7 +18,7 @@ int main(int argc, char* argv[]) {
   yake::Config config{};
   config.max_keywords = 5;
   const yake::KeywordExtractor extractor{config};
-  const auto keywords{extractor.extract((text.empty()) ? kExampleText : std::string_view{text})};
+  const auto keywords{extractor.extract((text.empty()) ? example_text : std::string_view{text})};
 
   for (const yake::Keyword& keyword : keywords) std::cout << keyword.text << '\n';
 }
