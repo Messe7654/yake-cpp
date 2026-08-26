@@ -1,7 +1,10 @@
 add_executable(yake_example keyword_extraction.cc)
 yake_configure_target(yake_example)
+target_link_libraries(yake_example PRIVATE yake::yake)
 
-target_link_libraries(yake_example
-    PRIVATE
-        yake::yake
-)
+foreach(example IN ITEMS custom_configuration deduplication_policies)
+    set(target "yake_example_${example}")
+    add_executable(${target} ${example}.cc)
+    yake_configure_target(${target})
+    target_link_libraries(${target} PRIVATE yake::yake)
+endforeach()

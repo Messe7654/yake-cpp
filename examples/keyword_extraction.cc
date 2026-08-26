@@ -19,8 +19,20 @@ int main(int argc, char* argv[]) {
     text.append(argv[idx]);
   }
 
-  const yake::KeywordExtractor extractor{};
+  yake::Config config{};
+  config.max_keywords = 5;
+  const yake::KeywordExtractor extractor{config};
   const auto keywords{extractor.extract((text.empty()) ? kExampleText : std::string_view{text})};
 
-  for (const yake::Keyword& keyword : keywords) std::cout << keyword.text << "\t" << keyword.score << '\n';
+  for (const yake::Keyword& keyword : keywords) std::cout << keyword.text << '\n';
 }
+
+// Expected output when run without arguments:
+// Keyword extraction identifies
+// relevant expressions
+// Keyword extraction
+// YAKE performs unsupervised
+// extraction identifies
+//
+// The program also accepts the text to analyze as command-line arguments, so
+// the output will differ when arguments are provided.
