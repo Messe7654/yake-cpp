@@ -1,11 +1,15 @@
 #include "detail/stop_words.h"
 #include "detail/stop_words_data.h"
 
+#include <algorithm>
+#include <array>
 #include <cstddef>
+#include <cstdint>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <utf8proc.h>
+#include <vector>
 
 namespace yake::detail {
 namespace {
@@ -40,6 +44,47 @@ StopWordSet parse_stop_words(std::string_view data) {
   return stop_words;
 }
 
+class EnglishStopWordsTrie {
+ public:
+  EnglishStopWordsTrie() {
+    nodes_.emplace_back();
+    for (const auto& word : parse_stop_words(kEnglishStopWordsData)) {
+      if (word.empty()) continue;
+      int curr{0};
+      for (unsigned char c : word) {
+        if (nodes_[curr].next[c] == -1) {
+          nodes_[curr].next[c] = static_cast<int16_t>(nodes_.size());
+          nodes_.emplace_back();
+        }
+        curr = nodes_[curr].next[c];
+      }
+      nodes_[curr].is_end = true;
+    }
+  }
+
+  [[nodiscard]] bool contains(std::string_view token) const noexcept {
+    int curr{0};
+    for (unsigned char c : token) {
+      curr = nodes_[curr].next[c];
+      if (curr == -1) return false;
+    }
+    return nodes_[curr].is_end;
+  }
+
+ private:
+  struct Node {
+    std::array<int16_t, 256> next{};
+    bool is_end{false};
+    Node() { next.fill(-1); }
+  };
+  std::vector<Node> nodes_{};
+};
+
+const EnglishStopWordsTrie& english_stop_words_trie() {
+  static const EnglishStopWordsTrie trie{};
+  return trie;
+}
+
 }  // namespace
 
 const StopWordSet& stop_words_for_language(std::string_view language) {
@@ -50,7 +95,15 @@ const StopWordSet& stop_words_for_language(std::string_view language) {
 }
 
 bool is_stop_word(std::string_view token, const StopWordSet& stop_words) {
-  return code_point_count(token) < 3 || stop_words.find(std::string{token}) != stop_words.end();
+  const bool is_ascii{std::all_of(token.begin(), token.end(), [](unsigned char c) { return c < 0x80; })};
+  if (is_ascii ? token.size() < 3 : code_point_count(token) < 3) return true;
+
+  const auto& default_english{stop_words_for_language("en")};
+  if (&stop_words == &default_english) {
+    return english_stop_words_trie().contains(token);
+  }
+
+  return stop_words.find(std::string{token}) != stop_words.end();
 }
 
 }  // namespace yake::detail
