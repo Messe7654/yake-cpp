@@ -33,31 +33,41 @@ CodePoints decode_code_points(std::string_view text) {
   return points;
 }
 
+struct SequenceMatcherBuffer {
+  std::vector<std::size_t> prev;
+  std::vector<std::size_t> curr;
+
+  explicit SequenceMatcherBuffer(std::size_t max_size) : prev(max_size), curr(max_size) {}
+};
+
 std::size_t count_sequence_matches(const CodePoints& lhs, std::size_t lhs_begin, std::size_t lhs_end,
-                                   const CodePoints& rhs, std::size_t rhs_begin, std::size_t rhs_end) {
+                                   const CodePoints& rhs, std::size_t rhs_begin, std::size_t rhs_end, std::size_t* prev,
+                                   std::size_t* curr) {
   std::size_t best_len{0};
   std::size_t best_lhs{lhs_begin};
   std::size_t best_rhs{rhs_begin};
-  std::vector<std::size_t> prev(rhs_end - rhs_begin + 1);
-  std::vector<std::size_t> curr(rhs_end - rhs_begin + 1);
+  const std::size_t row_len{rhs_end - rhs_begin + 1};
+  std::fill_n(prev, row_len, 0);
+  std::fill_n(curr, row_len, 0);
 
   for (std::size_t lhs_idx{lhs_begin}; lhs_idx < lhs_end; ++lhs_idx) {
+    const auto lhs_char{lhs[lhs_idx]};
     for (std::size_t rhs_idx{rhs_begin}; rhs_idx < rhs_end; ++rhs_idx) {
       const std::size_t col{rhs_idx - rhs_begin + 1};
-      curr[col] = (lhs[lhs_idx] == rhs[rhs_idx]) ? prev[col - 1] + 1 : 0;
+      curr[col] = (lhs_char == rhs[rhs_idx]) ? prev[col - 1] + 1 : 0;
       if (curr[col] > best_len) {
         best_len = curr[col];
         best_lhs = lhs_idx + 1 - best_len;
         best_rhs = rhs_idx + 1 - best_len;
       }
     }
-    prev.swap(curr);
-    std::fill(curr.begin(), curr.end(), 0);
+    std::swap(prev, curr);
+    std::fill_n(curr, row_len, 0);
   }
 
   if (best_len == 0) return 0;
-  return best_len + count_sequence_matches(lhs, lhs_begin, best_lhs, rhs, rhs_begin, best_rhs) +
-         count_sequence_matches(lhs, best_lhs + best_len, lhs_end, rhs, best_rhs + best_len, rhs_end);
+  return best_len + count_sequence_matches(lhs, lhs_begin, best_lhs, rhs, rhs_begin, best_rhs, prev, curr) +
+         count_sequence_matches(lhs, best_lhs + best_len, lhs_end, rhs, best_rhs + best_len, rhs_end, prev, curr);
 }
 
 }  // namespace
@@ -137,8 +147,11 @@ double sequence_matcher_similarity(std::string_view lhs, std::string_view rhs) {
   const auto lhs_points{decode_code_points(lhs)};
   const auto rhs_points{decode_code_points(rhs)};
   if (lhs_points.empty() && rhs_points.empty()) return 1.0;
+  if (lhs_points.empty() || rhs_points.empty()) return 0.0;
 
-  const std::size_t matches{count_sequence_matches(lhs_points, 0, lhs_points.size(), rhs_points, 0, rhs_points.size())};
+  SequenceMatcherBuffer buffer{rhs_points.size() + 1};
+  const std::size_t matches{count_sequence_matches(lhs_points, 0, lhs_points.size(), rhs_points, 0, rhs_points.size(),
+                                                   buffer.prev.data(), buffer.curr.data())};
   return 2.0 * matches / (lhs_points.size() + rhs_points.size());
 }
 
