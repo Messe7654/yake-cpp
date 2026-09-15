@@ -77,29 +77,43 @@ std::size_t count_sequence_matches(CodePointView lhs, CodePointView rhs, std::si
 double levenshtein_similarity(std::string_view lhs, std::string_view rhs) {
   const auto lhs_points{decode_code_points(lhs)};
   const auto rhs_points{decode_code_points(rhs)};
-  if (lhs_points.empty() && rhs_points.empty()) return 1.0;
+  CodePointView lhs_view{lhs_points};
+  CodePointView rhs_view{rhs_points};
 
-  CodePointView shorter{lhs_points};
-  CodePointView longer{rhs_points};
+  if (lhs_view == rhs_view) return 1.0;
+  if (lhs_view.empty() || rhs_view.empty()) return 0.0;
+
+  while (!lhs_view.empty() && !rhs_view.empty() && lhs_view.front() == rhs_view.front()) {
+    lhs_view.remove_prefix(1);
+    rhs_view.remove_prefix(1);
+  }
+  while (!lhs_view.empty() && !rhs_view.empty() && lhs_view.back() == rhs_view.back()) {
+    lhs_view.remove_suffix(1);
+    rhs_view.remove_suffix(1);
+  }
+
+  const std::size_t max_len{std::max(lhs_points.size(), rhs_points.size())};
+  CodePointView shorter{lhs_view};
+  CodePointView longer{rhs_view};
   if (shorter.size() > longer.size()) std::swap(shorter, longer);
+  if (shorter.empty()) return 1.0 - static_cast<double>(longer.size()) / max_len;
 
-  std::vector<std::size_t> prev(shorter.size() + 1);
-  std::vector<std::size_t> curr(shorter.size() + 1);
-  for (std::size_t col{0}; col < prev.size(); ++col) prev[col] = col;
+  std::vector<std::size_t> dp(shorter.size() + 1);
+  for (std::size_t col{0}; col < dp.size(); ++col) dp[col] = col;
 
   std::size_t row{1};
   for (const char32_t longer_char : longer) {
-    curr[0] = row;
-    std::size_t col{1};
-    for (const char32_t shorter_char : shorter) {
-      const std::size_t sub_cost{(longer_char == shorter_char) ? 0U : 1U};
-      curr[col] = std::min({prev[col] + 1, curr[col - 1] + 1, prev[col - 1] + sub_cost});
-      ++col;
+    std::size_t prev_diag{dp[0]};
+    dp[0] = row;
+    for (std::size_t col{1}; col <= shorter.size(); ++col) {
+      const std::size_t old_dp{dp[col]};
+      const std::size_t sub_cost{(longer_char == shorter[col - 1]) ? 0U : 1U};
+      dp[col]   = std::min({dp[col] + 1, dp[col - 1] + 1, prev_diag + sub_cost});
+      prev_diag = old_dp;
     }
-    prev.swap(curr);
     ++row;
   }
-  return 1.0 - static_cast<double>(prev.back()) / longer.size();
+  return 1.0 - static_cast<double>(dp.back()) / max_len;
 }
 
 double jaro_winkler_similarity(std::string_view lhs, std::string_view rhs) {
